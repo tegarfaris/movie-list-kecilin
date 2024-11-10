@@ -43,7 +43,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
       </details>
       <button
         onClick={() => handleBookmark(movie)}
-        className="absolute top-2 right-2 p-1 bg-neutral-900 p-3 rounded-full shadow-md"
+        className="absolute top-2 right-2 p-1 p-3"
       >
         {isBookmarked(movie.id) ? <FaBookmark /> : <FaRegBookmark />}
       </button>
