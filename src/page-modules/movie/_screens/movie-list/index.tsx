@@ -1,6 +1,6 @@
+import React, { useEffect, useState, useRef } from "react";
 import SkeletonCard from "@/components/skeleton";
 import useMovies from "@/hooks/useMovies";
-import React, { useEffect, useState } from "react";
 import MovieHeader from "../../_components/movie-header";
 import { IMovies } from "@/interface/movie.interface";
 import MovieCard from "../../_components/movie-card";
@@ -19,8 +19,9 @@ const MovieList: React.FC = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [bookmarks, setBookmarks] = useState<IMovies[]>([]);
-  const [movies, setMovies] = useState<IMovies[]>([]); // State untuk menyimpan daftar film
+  const [movies, setMovies] = useState<IMovies[]>([]);
   const [editMovie, setEditMovie] = useState<IMovies | null>(null);
+  const modalRef = useRef<HTMLDialogElement>(null);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -87,7 +88,7 @@ const MovieList: React.FC = () => {
   };
 
   const openModalCreate = () => {
-    document.getElementById("my_modal_2")?.showModal();
+    modalRef.current?.showModal();
   };
 
   const handleEditSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -107,7 +108,7 @@ const MovieList: React.FC = () => {
       );
       setMovies(updatedMovies);
       setEditMovie(null);
-      document.getElementById("my_modal_2")?.close();
+      modalRef.current?.close();
     }
   };
 
@@ -122,12 +123,12 @@ const MovieList: React.FC = () => {
       genre_ids: e.currentTarget.genre.value.split(",").map(Number),
     };
     createPost(newMovie);
-    document.getElementById("my_modal_2")?.close();
+    modalRef.current?.close();
   };
 
   const openModalEdit = (movie: IMovies) => {
     setEditMovie(movie);
-    document.getElementById("my_modal_2")?.showModal();
+    modalRef.current?.showModal();
   };
 
   const deletePost = (movieId: number) => {
@@ -160,14 +161,13 @@ const MovieList: React.FC = () => {
         }
         openModalCreate={openModalCreate}
       />
-      {/* Open the modal using document.getElementById('ID').showModal() method */}
       <MovieModal
         editMovie={editMovie}
         handleEditSubmit={handleEditSubmit}
         handleCreateSubmit={handleCreateSubmit}
+        modalRef={modalRef}
       />
 
-      {/* Bookmark Section */}
       <MovieBookmarkSection
         bookmarks={bookmarks}
         handleBookmark={handleBookmark}
@@ -177,7 +177,6 @@ const MovieList: React.FC = () => {
       <div
         className={`divider ${bookmarks.length === 0 ? "hidden" : "flex"}`}
       ></div>
-      {/* Main Movie List */}
       <div className="grid grid-cols-5 gap-4">
         {filteredList().length > 0 ? (
           filteredList().map((movie) => (
@@ -199,8 +198,6 @@ const MovieList: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* Pagination Controls */}
       <div className="flex justify-center mt-4">
         <div className="flex btn-group gap-2">
           {[...Array(totalPages)].map((_, idx) => (
