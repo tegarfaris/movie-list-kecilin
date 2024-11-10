@@ -10,8 +10,7 @@ export const REQUEST_GET_MOVIE_LIST = createAsyncThunk(
         {
           headers: {
             accept: "application/json",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5ZGEzYjI5NGY4MTM3ZmFmNTY5ODY2NTVlZTZmNzI5YiIsIm5iZiI6MTczMDk2NzUzNC4wNjQxMjgyLCJzdWIiOiI2NzJjNTg5MTVhMjA0NTkyMDc0MTNjMWUiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.sZZijQ1cwUoF4lZk9TTvd8PUspeOaUZ4tMwKqcRZgVY",
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMBDB_API_KEY}`,
           },
         }
       );

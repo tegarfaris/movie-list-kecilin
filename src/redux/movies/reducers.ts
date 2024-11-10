@@ -1,9 +1,10 @@
 import { createReducer } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 import { REQUEST_GET_MOVIE_LIST } from "./actions";
+import { IMovies } from "@/interface/movie.interface";
 
 export type TMovieState = {
-  list: [];
+  list: IMovies[] | [];
   total: number;
   error: AxiosError | null;
   pending: boolean;
@@ -26,7 +27,8 @@ export const MOVIE_REDUCER = createReducer(initialState, (builder) => {
     })
     .addCase(REQUEST_GET_MOVIE_LIST.fulfilled, (state, { payload }) => {
       state.pending = false;
-      state.list = payload;
+      state.list = payload?.results;
+      state.total = payload?.total_results;
       state.success = true;
     })
     .addCase(REQUEST_GET_MOVIE_LIST.rejected, (state, { payload }) => {
