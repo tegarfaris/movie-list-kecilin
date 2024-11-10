@@ -2,17 +2,20 @@
 import { renderCategoriesMovie } from "@/helper/render-categories.helper";
 import { IMovies } from "@/interface/movie.interface";
 import React from "react";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 
 interface MovieCardProps {
   movie: IMovies;
   handleBookmark: (movie: IMovies) => void;
   isBookmarked: (movieId: number) => boolean;
+  onDelete: () => void;
 }
 const MovieCard: React.FC<MovieCardProps> = ({
   movie,
   handleBookmark,
   isBookmarked,
+  onDelete,
 }) => {
   return (
     <div className="relative flex flex-col gap-4 cursor-pointer">
@@ -21,6 +24,21 @@ const MovieCard: React.FC<MovieCardProps> = ({
         alt={movie.original_title || "Movie poster"}
         className="max-w-xs h-[400px] rounded-lg object-cover"
       />
+      <details className="dropdown absolute top-0 left-0">
+        <summary className="btn btn-ghost hover:bg-transparent m-1">
+          <BsThreeDotsVertical />
+        </summary>
+        <ul className="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+          <li>
+            <a>Edit Post</a>
+          </li>
+          <li>
+            <a className="text-red-500" onClick={onDelete}>
+              Delete Post
+            </a>
+          </li>
+        </ul>
+      </details>
       <button
         onClick={() => handleBookmark(movie)}
         className="absolute top-2 right-2 p-1 bg-neutral-900 p-3 rounded-full shadow-md"

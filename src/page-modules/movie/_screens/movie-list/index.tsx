@@ -101,6 +101,12 @@ const MovieList: React.FC = () => {
     document.getElementById("my_modal_2")?.close();
   };
 
+  const deletePost = (movieId: number) => {
+    setMovies((prevMovies) =>
+      prevMovies.filter((movie) => movie.id !== movieId)
+    );
+  };
+
   if (loading) {
     return (
       <div className="grid grid-cols-5 gap-4">
@@ -202,6 +208,7 @@ const MovieList: React.FC = () => {
                 movie={movie}
                 handleBookmark={handleBookmark}
                 isBookmarked={isBookmarked}
+                onDelete={() => deletePost(movie.id)}
               />
             ))}
           </div>
@@ -217,6 +224,7 @@ const MovieList: React.FC = () => {
               movie={movie}
               handleBookmark={handleBookmark}
               isBookmarked={isBookmarked}
+              onDelete={() => deletePost(movie.id)}
             />
           ))
         ) : (
