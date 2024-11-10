@@ -7,11 +7,9 @@ const MovieMain: React.FC = () => {
     <div className="flex flex-col w-full text-white">
       {/* start header */}
       <Header />
-      {/* end header */}
 
       {/* start list */}
       <MovieList />
-      {/* end list */}
     </div>
   );
 };
