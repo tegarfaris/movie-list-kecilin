@@ -1,4 +1,5 @@
 import React from "react";
+import genres from "@/data/category-data.json";
 
 interface MovieHeaderProps {
   filterList: {
@@ -11,41 +12,21 @@ interface MovieHeaderProps {
       filterBy?: number[];
     }>
   >;
+  openModalCreate: () => void;
 }
-
-const genres = [
-  { id: 28, name: "Action" },
-  { id: 12, name: "Adventure" },
-  { id: 16, name: "Animation" },
-  { id: 35, name: "Comedy" },
-  { id: 80, name: "Crime" },
-  { id: 99, name: "Documentary" },
-  { id: 18, name: "Drama" },
-  { id: 10751, name: "Family" },
-  { id: 14, name: "Fantasy" },
-  { id: 36, name: "History" },
-  { id: 27, name: "Horror" },
-  { id: 10402, name: "Music" },
-  { id: 9648, name: "Mystery" },
-  { id: 10749, name: "Romance" },
-  { id: 878, name: "Science Fiction" },
-  { id: 10770, name: "TV Movie" },
-  { id: 53, name: "Thriller" },
-  { id: 10752, name: "War" },
-  { id: 37, name: "Western" },
-];
 
 const MovieHeader: React.FC<MovieHeaderProps> = ({
   filterList,
   setFilterList,
+  openModalCreate,
 }) => {
   // Handle checkbox change
   const handleCheckboxChange = (genreId: number) => {
     setFilterList((prev) => {
       const isSelected = prev.filterBy?.includes(genreId);
       const newFilterBy = isSelected
-        ? prev.filterBy?.filter((id) => id !== genreId) // Remove if selected
-        : [...(prev.filterBy || []), genreId]; // Add if not selected
+        ? prev.filterBy?.filter((id) => id !== genreId)
+        : [...(prev.filterBy || []), genreId];
       return { ...prev, filterBy: newFilterBy };
     });
   };
@@ -56,7 +37,13 @@ const MovieHeader: React.FC<MovieHeaderProps> = ({
   };
 
   return (
-    <div className="flex justify-end gap-3 py-2">
+    <div className="flex justify-end gap-1 py-2">
+      <button
+        className="btn btn-outline btn-sm m-1 border border-neutral-600"
+        onClick={() => openModalCreate()}
+      >
+        Create Post
+      </button>
       {/* Sorting */}
       <div className="dropdown dropdown-end">
         <div
@@ -86,7 +73,7 @@ const MovieHeader: React.FC<MovieHeaderProps> = ({
           role="button"
           className="btn btn-sm m-1 bg-transparent border border-neutral-600"
         >
-          Categories
+          Genre
         </div>
         <ul
           tabIndex={0}

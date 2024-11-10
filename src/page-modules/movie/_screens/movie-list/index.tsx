@@ -1,11 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
 import SkeletonCard from "@/components/skeleton";
 import useMovies from "@/hooks/useMovies";
 import React, { useEffect, useState } from "react";
 import MovieHeader from "../../_components/movie-header";
-import { renderCategoriesMovie } from "@/helper/render-categories.helper";
 import { IMovies } from "@/interface/movie.interface";
-import { FaBookmark, FaRegBookmark } from "react-icons/fa";
+import MovieCard from "../../_components/movie-card";
 
 const MovieList: React.FC = () => {
   const { getListMovies, list } = useMovies();
@@ -19,6 +17,7 @@ const MovieList: React.FC = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [bookmarks, setBookmarks] = useState<IMovies[]>([]);
+  const [movies, setMovies] = useState<IMovies[]>([]); // State untuk menyimpan daftar film
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -31,8 +30,16 @@ const MovieList: React.FC = () => {
     return () => clearTimeout(delay);
   }, [getListMovies]);
 
+  useEffect(() => {
+    setMovies(list); // Set daftar film ke state movies ketika list berubah
+  }, [list]);
+
+  const createPost = (newMovie: IMovies) => {
+    setMovies([newMovie, ...movies]); // Menambahkan film baru di urutan pertama
+  };
+
   const filteredList = () => {
-    let sortedMovies = [...list];
+    let sortedMovies = [...movies];
 
     if (filterList.sortBy) {
       sortedMovies.sort((a, b) => {
@@ -56,7 +63,7 @@ const MovieList: React.FC = () => {
     return sortedMovies.slice(startIndex, startIndex + itemsPerPage);
   };
 
-  const totalPages = Math.ceil(list.length / itemsPerPage);
+  const totalPages = Math.ceil(movies.length / itemsPerPage);
 
   const handleBookmark = (movie: IMovies) => {
     setBookmarks((prev) => {
@@ -74,6 +81,24 @@ const MovieList: React.FC = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const openModalCreate = () => {
+    document.getElementById("my_modal_2")?.showModal();
+  };
+
+  const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const newMovie: IMovies = {
+      id: Date.now(),
+      poster_path: e.currentTarget.poster.value,
+      original_title: e.currentTarget.titleMovie.value,
+      overview: e.currentTarget.overview.value,
+      vote_average: parseFloat(e.currentTarget.vote.value),
+      genre_ids: e.currentTarget.genre.value.split(",").map(Number),
+    };
+    createPost(newMovie);
+    document.getElementById("my_modal_2")?.close();
   };
 
   if (loading) {
@@ -98,7 +123,71 @@ const MovieList: React.FC = () => {
             }>
           >
         }
+        openModalCreate={openModalCreate}
       />
+      {/* Open the modal using document.getElementById('ID').showModal() method */}
+      <dialog id="my_modal_2" className="modal">
+        <div className="modal-box w-full max-w-lg overflow-hidden">
+          <h3 className="font-bold text-lg">Create Post</h3>
+          <form
+            onSubmit={handleCreateSubmit}
+            className="modal-backdrop py-5 gap-3 w-full"
+          >
+            <div className="flex flex-col gap-2">
+              <label className="text-white">Poster</label>
+              <input
+                className="input input-bordered text-white"
+                type="text"
+                name="poster"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-white">Title</label>
+              <input
+                className="input input-bordered text-white"
+                type="text"
+                name="titleMovie"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-white">Overview</label>
+              <input
+                className="input input-bordered text-white"
+                type="text"
+                name="overview"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-white">TMDB rate</label>
+              <input
+                className="input input-bordered text-white"
+                type="text"
+                name="vote"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-white">Genre (comma separated ids)</label>
+              <input
+                className="input input-bordered text-white"
+                type="text"
+                name="genre"
+              />
+            </div>
+            <div className="flex gap-3 w-full">
+              <button
+                type="button"
+                onClick={() => document.getElementById("my_modal_2")?.close()}
+                className="btn text-white"
+              >
+                Close
+              </button>
+              <button type="submit" className="btn text-white">
+                Post
+              </button>
+            </div>
+          </form>
+        </div>
+      </dialog>
 
       {/* Bookmark Section */}
       {bookmarks.length > 0 && (
@@ -108,52 +197,12 @@ const MovieList: React.FC = () => {
           </h2>
           <div className="grid grid-cols-5 gap-4">
             {bookmarks.map((movie) => (
-              <div
+              <MovieCard
                 key={movie.id}
-                className="relative flex flex-col gap-4 cursor-pointer"
-              >
-                <img
-                  src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
-                  alt={movie.original_title || "Movie poster"}
-                  className="max-w-xs h-[400px] rounded-lg object-cover"
-                />
-                <button
-                  onClick={() => handleBookmark(movie)}
-                  className="absolute top-2 right-2 p-1 bg-neutral-900 p-3 rounded-full shadow-md"
-                >
-                  {isBookmarked(movie.id) ? <FaBookmark /> : <FaRegBookmark />}
-                </button>
-                <div className="flex gap-2 flex-wrap">
-                  {movie.genre_ids.slice(0, 2).map((genreId: number) => {
-                    const category = renderCategoriesMovie(genreId);
-                    return (
-                      category && (
-                        <div
-                          key={genreId}
-                          className={`badge border-red-500 text-red-500 badge-outline`}
-                        >
-                          {category.text}
-                        </div>
-                      )
-                    );
-                  })}
-                  {movie.genre_ids.length > 2 && (
-                    <div className="badge border-red-500 text-red-500 badge-outline">
-                      +{movie.genre_ids.length - 2}
-                    </div>
-                  )}
-                </div>
-                <p className="line-clamp-2 text-3xl font-bold h-[70px]">
-                  {movie.original_title}
-                </p>
-                <p className="text-sm text-neutral-500">
-                  tmdb: {Number(movie.vote_average).toFixed(1)} / 10
-                </p>
-
-                <p className="line-clamp-4 text-sm text-neutral-500 text-justify">
-                  {movie.overview}
-                </p>
-              </div>
+                movie={movie}
+                handleBookmark={handleBookmark}
+                isBookmarked={isBookmarked}
+              />
             ))}
           </div>
         </div>
@@ -162,53 +211,13 @@ const MovieList: React.FC = () => {
       {/* Main Movie List */}
       <div className="grid grid-cols-5 gap-4">
         {filteredList().length > 0 ? (
-          filteredList().map((movie, idx) => (
-            <div
-              key={idx}
-              className="relative flex flex-col gap-4 cursor-pointer"
-            >
-              <img
-                src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
-                alt={movie.original_title || "Movie poster"}
-                className="max-w-xs h-[400px] rounded-lg object-cover"
-              />
-              <button
-                onClick={() => handleBookmark(movie)}
-                className="absolute top-2 right-2 p-1 bg-neutral-900 p-3 rounded-full shadow-md"
-              >
-                {isBookmarked(movie.id) ? <FaBookmark /> : <FaRegBookmark />}
-              </button>
-              <div className="flex gap-2 flex-wrap">
-                {movie.genre_ids.slice(0, 2).map((genreId) => {
-                  const category = renderCategoriesMovie(genreId);
-                  return (
-                    category && (
-                      <div
-                        key={genreId}
-                        className={`badge border-red-500 text-red-500 badge-outline`}
-                      >
-                        {category.text}
-                      </div>
-                    )
-                  );
-                })}
-                {movie.genre_ids.length > 2 && (
-                  <div className="badge border-red-500 text-red-500 badge-outline">
-                    +{movie.genre_ids.length - 2}
-                  </div>
-                )}
-              </div>
-              <p className="line-clamp-2 text-3xl font-bold h-[70px]">
-                {movie.original_title}
-              </p>
-              <p className="text-sm text-neutral-500">
-                tmdb: {Number(movie.vote_average).toFixed(1)} / 10
-              </p>
-
-              <p className="line-clamp-4 text-sm text-neutral-500 text-justify">
-                {movie.overview}
-              </p>
-            </div>
+          filteredList().map((movie) => (
+            <MovieCard
+              key={movie.id}
+              movie={movie}
+              handleBookmark={handleBookmark}
+              isBookmarked={isBookmarked}
+            />
           ))
         ) : (
           <div className="col-span-5 text-center py-20">
