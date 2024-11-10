@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { IMovies } from "@/interface/movie.interface";
 
 interface MovieModalProps {
