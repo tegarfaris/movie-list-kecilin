@@ -10,12 +10,14 @@ interface MovieCardProps {
   handleBookmark: (movie: IMovies) => void;
   isBookmarked: (movieId: number) => boolean;
   onDelete: () => void;
+  openModalEdit: (movie: IMovies) => void;
 }
 const MovieCard: React.FC<MovieCardProps> = ({
   movie,
   handleBookmark,
   isBookmarked,
   onDelete,
+  openModalEdit,
 }) => {
   return (
     <div className="relative flex flex-col gap-4 cursor-pointer">
@@ -30,7 +32,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
         </summary>
         <ul className="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
           <li>
-            <a>Edit Post</a>
+            <a onClick={() => openModalEdit(movie)}>Edit Post</a>
           </li>
           <li>
             <a className="text-red-500" onClick={onDelete}>

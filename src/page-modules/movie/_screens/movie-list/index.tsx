@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import MovieHeader from "../../_components/movie-header";
 import { IMovies } from "@/interface/movie.interface";
 import MovieCard from "../../_components/movie-card";
+import MovieBookmarkSection from "../../_components/movie-bookmark-section";
+import MovieModal from "../../_components/movie-modal";
 
 const MovieList: React.FC = () => {
   const { getListMovies, list } = useMovies();
@@ -18,6 +20,7 @@ const MovieList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [bookmarks, setBookmarks] = useState<IMovies[]>([]);
   const [movies, setMovies] = useState<IMovies[]>([]); // State untuk menyimpan daftar film
+  const [editMovie, setEditMovie] = useState<IMovies | null>(null);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -31,11 +34,11 @@ const MovieList: React.FC = () => {
   }, [getListMovies]);
 
   useEffect(() => {
-    setMovies(list); // Set daftar film ke state movies ketika list berubah
+    setMovies(list);
   }, [list]);
 
   const createPost = (newMovie: IMovies) => {
-    setMovies([newMovie, ...movies]); // Menambahkan film baru di urutan pertama
+    setMovies([newMovie, ...movies]);
   };
 
   const filteredList = () => {
@@ -87,6 +90,27 @@ const MovieList: React.FC = () => {
     document.getElementById("my_modal_2")?.showModal();
   };
 
+  const handleEditSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (editMovie) {
+      const updatedMovies = movies.map((movie) =>
+        movie.id === editMovie.id
+          ? {
+              ...movie,
+              poster_path: e.currentTarget.poster.value,
+              original_title: e.currentTarget.titleMovie.value,
+              overview: e.currentTarget.overview.value,
+              vote_average: parseFloat(e.currentTarget.vote.value),
+              genre_ids: e.currentTarget.genre.value.split(",").map(Number),
+            }
+          : movie
+      );
+      setMovies(updatedMovies);
+      setEditMovie(null);
+      document.getElementById("my_modal_2")?.close();
+    }
+  };
+
   const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newMovie: IMovies = {
@@ -99,6 +123,11 @@ const MovieList: React.FC = () => {
     };
     createPost(newMovie);
     document.getElementById("my_modal_2")?.close();
+  };
+
+  const openModalEdit = (movie: IMovies) => {
+    setEditMovie(movie);
+    document.getElementById("my_modal_2")?.showModal();
   };
 
   const deletePost = (movieId: number) => {
@@ -132,89 +161,22 @@ const MovieList: React.FC = () => {
         openModalCreate={openModalCreate}
       />
       {/* Open the modal using document.getElementById('ID').showModal() method */}
-      <dialog id="my_modal_2" className="modal">
-        <div className="modal-box w-full max-w-lg overflow-hidden">
-          <h3 className="font-bold text-lg">Create Post</h3>
-          <form
-            onSubmit={handleCreateSubmit}
-            className="modal-backdrop py-5 gap-3 w-full"
-          >
-            <div className="flex flex-col gap-2">
-              <label className="text-white">Poster</label>
-              <input
-                className="input input-bordered text-white"
-                type="text"
-                name="poster"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-white">Title</label>
-              <input
-                className="input input-bordered text-white"
-                type="text"
-                name="titleMovie"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-white">Overview</label>
-              <input
-                className="input input-bordered text-white"
-                type="text"
-                name="overview"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-white">TMDB rate</label>
-              <input
-                className="input input-bordered text-white"
-                type="text"
-                name="vote"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-white">Genre (comma separated ids)</label>
-              <input
-                className="input input-bordered text-white"
-                type="text"
-                name="genre"
-              />
-            </div>
-            <div className="flex gap-3 w-full">
-              <button
-                type="button"
-                onClick={() => document.getElementById("my_modal_2")?.close()}
-                className="btn text-white"
-              >
-                Close
-              </button>
-              <button type="submit" className="btn text-white">
-                Post
-              </button>
-            </div>
-          </form>
-        </div>
-      </dialog>
+      <MovieModal
+        editMovie={editMovie}
+        handleEditSubmit={handleEditSubmit}
+        handleCreateSubmit={handleCreateSubmit}
+      />
 
       {/* Bookmark Section */}
-      {bookmarks.length > 0 && (
-        <div className="flex flex-col mb-8">
-          <h2 className="text-2xl font-semibold text-neutral-400 uppercase mb-4">
-            Bookmarked Movies
-          </h2>
-          <div className="grid grid-cols-5 gap-4">
-            {bookmarks.map((movie) => (
-              <MovieCard
-                key={movie.id}
-                movie={movie}
-                handleBookmark={handleBookmark}
-                isBookmarked={isBookmarked}
-                onDelete={() => deletePost(movie.id)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
+      <MovieBookmarkSection
+        bookmarks={bookmarks}
+        handleBookmark={handleBookmark}
+        deletePost={deletePost}
+        openModalEdit={openModalEdit}
+      />
+      <div
+        className={`divider ${bookmarks.length === 0 ? "hidden" : "flex"}`}
+      ></div>
       {/* Main Movie List */}
       <div className="grid grid-cols-5 gap-4">
         {filteredList().length > 0 ? (
@@ -225,6 +187,7 @@ const MovieList: React.FC = () => {
               handleBookmark={handleBookmark}
               isBookmarked={isBookmarked}
               onDelete={() => deletePost(movie.id)}
+              openModalEdit={openModalEdit}
             />
           ))
         ) : (
