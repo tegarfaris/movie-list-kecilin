@@ -1,40 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# How to install
+- Clone this repository 
+- open new terminal and type `yarn` or `npm install`
+- run the code using command `yarn dev` or `npm run dev`
 
-## Getting Started
+# How to build
+- you can type `yarn build`
 
-First, run the development server:
+# Tech Stack
+`1. Next Js Pages Router with typescript`
+`2. Tailwind with daisyUI`
+`3. Redux`
+`4. React icons`
+`5. axios`
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+# Feature
+list from TMDB api (if the result is empty, please check tab network to see api_key was granted or not yet)
+`1. Create Post` -> klik button `create post`
+`2. Edit Post` -> klik triple dots on left top card movie and then klik `edit post`
+`3. Delete Post` -> klik triple dots on left top card movie and then klik `delete post`
+`4. Bookmark` -> klik icon bookmark on right top card movie and then the bookmarked movie will be avail on bookmark section
+`5. Pagination`
+`6. Sort by title`
+`7. Filter by genre or category`
+`8. Light/dark mode`
